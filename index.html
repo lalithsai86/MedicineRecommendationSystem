@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Health Care Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  </head>
+
+  <style>
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            color: black;
+            margin-top: 0;
+            margin-left: 2px;
+        }
+
+        .myimg {
+            width: 50px;
+            height: 50px;
+            border: 2px solid black;
+            border-radius: 25px;
+        }
+
+
+        #symptoms:hover, #symptoms:focus {
+        background-color: #4E5161;
+        color: #FFFFFF;
+        box-shadow: 0 0 5px rgba(239, 35, 60, 0.4);
+    }
+
+    /* Button hover effect */
+    .btn:hover {
+        background-color: #D90429; /* Darker red for the button */
+        box-shadow: 0 4px 10px rgba(217, 4, 41, 0.3);
+        color: #FFFFFF;
+    }
+
+
+       .toggle-button {
+    padding: 4px;
+    margin: 5px 40px 5px 0;
+    font-size: 20px;
+    font-weight: bold;
+    width: 140px;
+    border-radius: 5px;
+    color: white;
+    transition: background-color 0.3s ease; /* Smooth color transition */
+  }
+
+  /* New base colors */
+  .toggle-button.disease { background-color: #FF6F61; }
+  .toggle-button.description { background-color: #5DADEC; }
+  .toggle-button.precaution { background-color: #A569BD; }
+  .toggle-button.medications { background-color: #FF8C42; }
+  .toggle-button.workouts { background-color: #50C878; }
+  .toggle-button.diets { background-color: #FFD700; }
+
+  /* Hover effect with a slightly darker shade */
+  .toggle-button.disease:hover { background-color: #E05A52; }
+  .toggle-button.description:hover { background-color: #4D96C1; }
+  .toggle-button.precaution:hover { background-color: #8E4DA5; }
+  .toggle-button.medications:hover { background-color: #E07B37; }
+  .toggle-button.workouts:hover { background-color: #45B56B; }
+  .toggle-button.diets:hover { background-color: #E6C200; }
+
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <!-- Logo at the top-left corner -->
+            <div class="logo">
+                <img class="myimg" src="{{ url_for('static', filename='img.png') }}" alt="">
+            </div>
+
+            <a class="navbar-brand" href="#">MediChoice</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact">Contact</a>
+                    </li>
+
+                </ul>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+<!-- main form of page -->
+<h1 class="mt-4 my-4 text-center text-green">Health Care </h1>
+<div class="container my-4 mt-4" style="background: linear-gradient(135deg, #2B2D42, #8D99AE); color: #FFFFFF; border-radius: 15px; padding: 40px;">
+    <form action="/predict" method="post" id="symptomForm">
+        <div class="form-group">
+            <label for="symptoms" style="font-weight: bold; font-size: 1.2em;">Enter Symptoms:</label>
+            <input type="text" class="form-control" id="symptoms" name="symptoms"
+                placeholder="Type symptoms like itching, sleeping, aching, etc."
+                style="background-color: #F0F0F5; color: #333333; border: none; padding: 10px;
+                border-radius: 8px; transition: all 0.3s ease; font-weight: bold;" />
+        </div>
+        <br>
+        <!-- Button with hover effect -->
+        <button type="submit" class="btn btn-lg"
+            style="background-color: #EF233C; color: #FFFFFF; width: 100%; padding: 14px;
+            margin-bottom: 5px; border-radius: 8px; border: none; transition: all 0.3s ease;">
+            Predict
+        </button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('symptomForm').addEventListener('submit', function(event) {
+        var symptoms = document.getElementById('symptoms').value.trim();
+
+        if (!symptoms) {
+            alert("Please enter symptoms.");
+            event.preventDefault();  // Prevent the form from submitting
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+{% if predicted_disease %}
+
+<!-- Results -->
+<h3 class="text-center my-4 mt-4">Our System Results</h3>
+<div class="container">
+
+    <div class="result-container">
+        <!-- Buttons to toggle display -->
+        <button class="toggle-button disease" data-bs-toggle="modal" data-bs-target="#diseaseModal">Disease</button>
+<button class="toggle-button description" data-bs-toggle="modal" data-bs-target="#descriptionModal">Description</button>
+<button class="toggle-button precaution" data-bs-toggle="modal" data-bs-target="#precautionModal">Precaution</button>
+<button class="toggle-button medications" data-bs-toggle="modal" data-bs-target="#medicationsModal">Medications</button>
+<button class="toggle-button workouts" data-bs-toggle="modal" data-bs-target="#workoutsModal">Workouts</button>
+<button class="toggle-button diets" data-bs-toggle="modal" data-bs-target="#dietsModal">Diets</button>
+    </div>
+</div>
+
+{% endif %}
+
+<!-- Disease Modal -->
+    <div class="modal fade" id="diseaseModal" tabindex="-1" aria-labelledby="diseaseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #020606; color:white;"> <!-- Set header background color inline -->
+                    <h5 class="modal-title" id="diseaseModalLabel">Predicted Disease</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="background-color: #modal-body-color;"> <!-- Set modal body background color inline -->
+                    <p>{{ predicted_disease }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Description Modal -->
+    <div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #020606; color:white;">
+                    <h5 class="modal-title" id="descriptionModalLabel">Description</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>{{ dis_des }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Precaution Modal -->
+    <div class="modal fade" id="precautionModal" tabindex="-1" aria-labelledby="precautionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #020606; color:white;">
+                    <h5 class="modal-title" id="precautionModalLabel">Precaution</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        {% for i in my_precautions %}
+                            <li>{{ i }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- Medications Modal -->
+    <div class="modal fade" id="medicationsModal" tabindex="-1" aria-labelledby="medicationsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #020606; color:white;">
+                    <h5 class="modal-title" id="medicationsModalLabel">Medications</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        {% for i in medications %}
+                            <li>{{ i }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workouts Modal -->
+    <div class="modal fade" id="workoutsModal" tabindex="-1" aria-labelledby="workoutsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #020606; color:white;">
+                    <h5 class="modal-title" id="workoutsModalLabel">Workouts</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        {% for i in workout %}
+                            <li>{{ i }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diets Modal -->
+    <div class="modal fade" id="dietsModal" tabindex="-1" aria-labelledby="dietsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #020606; color:white;">
+                    <h5 class="modal-title" id="dietsModalLabel">Diets</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        {% for i in my_diet %}
+                            <li>{{ i }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+        <script>
+    const startSpeechRecognitionButton = document.getElementById('startSpeechRecognition');
+    const transcriptionDiv = document.getElementById('transcription');
+
+    startSpeechRecognitionButton.addEventListener('click', startSpeechRecognition);
+
+    function startSpeechRecognition() {
+        const recognition = new webkitSpeechRecognition(); // Use webkitSpeechRecognition for compatibility
+
+        recognition.lang = 'en-US'; // Set the language for recognition
+
+        recognition.onresult = function (event) {
+            const result = event.results[0][0].transcript;
+            transcriptionDiv.textContent = result;
+        };
+
+        recognition.onend = function () {
+            console.log('Speech recognition ended.');
+        };
+
+        recognition.start();
+    }
+</script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+</body>
+
+</html>
